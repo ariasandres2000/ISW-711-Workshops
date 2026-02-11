@@ -60,6 +60,48 @@ app.get('/course', async (req, res) => {
     }
 })
 
+app.put('/course', async (req, res) => {
+    try {
+        if (!req.query.id) {
+            return res.status(400).json({ message: "Course id is required" });
+        }
+
+        const updatedCourse = await Course.findByIdAndUpdate(
+            req.query.id,
+            {
+                name: req.body.name,
+                credits: req.body.credits
+            },
+            { new: true }
+        );
+
+        if (!updatedCourse) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        res.status(200).json(updatedCourse);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.delete('/course', async (req, res) => {
+    try {
+        if (!req.query.id) {
+            return res.status(400).json({ message: "Course id is required" });
+        }
+
+        const deletedCourse = await Course.findByIdAndDelete(req.query.id);
+
+        if (!deletedCourse) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        res.status(200).json({ message: "Course deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 //start the app
 app.listen(3001, () => console.log(`UTN API service listening on port 3001!`))
