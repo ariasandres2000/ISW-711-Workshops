@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Course List</title>
+</head>
+<body>
+
+  <h2>All Courses</h2>
+
+  <button onclick="getCourses()">Load Courses</button>
+
+  <ul id="courseList"></ul>
+
+  <br>
+  <a href="index.html">Back to Create Course</a>
+
+  <script>
+    function getCourses() {
+      fetch("http://localhost:3001/course")
+        .then(response => response.json())
+        .then(data => {
+          const list = document.getElementById('courseList');
+          list.innerHTML = "";
+
+          if (data.length === 0) {
+            list.innerHTML = "<li>No courses found</li>";
+            return;
+          }
+
+          data.forEach(course => {
+            const li = document.createElement("li");
+            li.textContent = `${course.name} - Credits: ${course.credits}`;
+            list.appendChild(li);
+          });
+        })
+        .catch(error => console.error("Error:", error));
+    }
+  </script>
+
+</body>
+</html>
