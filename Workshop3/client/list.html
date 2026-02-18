@@ -59,7 +59,7 @@
       })
       .then(response => {
         if (response.status === 200) {
-          getCourses(); // recargar lista
+          getCourses();
         } else if (response.status === 404) {
           alert("Course not found");
         }
@@ -67,7 +67,7 @@
       .catch(error => console.error("Error:", error));
     }
 
-    function editCourse(id) {
+    function editCourse(id) { 
       window.location.href = `edit.html?id=${id}`;
     }
 

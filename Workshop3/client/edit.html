@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Course</title>
+</head>
+<body>
+
+  <h2>Edit Course</h2>
+
+  <label>Nombre:</label>
+  <input type="text" id="nombre"><br><br>
+
+  <label>Código:</label>
+  <input type="text" id="codigo"><br><br>
+
+  <label>Descripción:</label>
+  <input type="text" id="descripcion"><br><br>
+
+  <label>Profesor:</label>
+  <select id="professorSelect"></select><br><br>
+
+  <button onclick="updateCourse()">Update</button>
+
+  <br><br>
+  <a href="list.html">Back to List</a>
+
+  <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get("id");
+
+    window.onload = function() {
+      loadProfessors();
+      loadCourse();
+    };
+
+    function loadProfessors() {
+      fetch("http://localhost:3001/professor")
+        .then(response => response.json())
+        .then(data => {
+          const select = document.getElementById("professorSelect");
+          select.innerHTML = "";
+
+          data.forEach(prof => {
+            const option = document.createElement("option");
+            option.value = prof._id;
+            option.text = prof.nombre + " " + prof.apellidos;
+            select.appendChild(option);
+          });
+        });
+    }
+
+    function loadCourse() {
+      fetch(`http://localhost:3001/course?id=${courseId}`)
+        .then(response => response.json())
+        .then(course => {
+
+          document.getElementById("nombre").value = course.nombre;
+          document.getElementById("codigo").value = course.codigo;
+          document.getElementById("descripcion").value = course.descripcion;
+          document.getElementById("professorSelect").value = course.professorId._id;
+
+        });
+    }
+
+    function updateCourse() {
+
+      const nombre = document.getElementById('nombre').value;
+      const codigo = document.getElementById('codigo').value;
+      const descripcion = document.getElementById('descripcion').value;
+      const professorId = document.getElementById('professorSelect').value;
+
+      fetch(`http://localhost:3001/course?id=${courseId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nombre,
+          codigo,
+          descripcion,
+          professorId
+        })
+      })
+      .then(response => {
+        if (response.status === 200) {
+          window.location.href = "list.html";
+        } else if (response.status === 404) {
+          alert("Course not found");
+        }
+      });
+    }
+
+  </script>
+
+</body>
+</html>
