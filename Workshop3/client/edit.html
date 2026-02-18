@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Edit Course</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
+    <div class="container">
+    
   <h2>Edit Course</h2>
 
   <label>Nombre:</label>
@@ -20,7 +22,7 @@
   <label>Profesor:</label>
   <select id="professorSelect"></select><br><br>
 
-  <button onclick="updateCourse()">Update</button>
+  <button class="primary" onclick="updateCourse()">Update</button>
 
   <br><br>
   <a href="list.html">Back to List</a>
@@ -93,6 +95,6 @@
     }
 
   </script>
-
+</div>
 </body>
 </html>

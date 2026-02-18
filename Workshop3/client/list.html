@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Course List</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="container">
 
   <h2>All Courses</h2>
 
@@ -32,7 +34,8 @@
 
           data.forEach(course => {
 
-            const li = document.createElement("li");
+            const li = document.createElement("div");
+            li.className = "course-card";
 
             li.innerHTML = `
               <strong>${course.nombre}</strong> 
@@ -40,8 +43,8 @@
               ${course.descripcion} <br>
               Profesor: ${course.professorId.nombre} ${course.professorId.apellidos}
               <br><br>
-              <button onclick="deleteCourse('${course._id}')">Delete</button>
-              <button onclick="editCourse('${course._id}')">Edit</button>
+              <button class="danger" onclick="deleteCourse('${course._id}')">Delete</button>
+              <button class="secondary" onclick="editCourse('${course._id}')">Edit</button>
               <hr>
             `;
 
@@ -72,6 +75,6 @@
     }
 
   </script>
-
+</div>
 </body>
 </html>
