@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Course List</title>
+</head>
+<body>
+
+  <h2>All Courses</h2>
+
+  <button onclick="getCourses()">Load Courses</button>
+
+  <ul id="courseList"></ul>
+
+  <br>
+  <a href="index.html">Back to Create Course</a>
+
+  <script>
+
+    function getCourses() {
+      fetch("http://localhost:3001/course")
+        .then(response => response.json())
+        .then(data => {
+
+          const list = document.getElementById('courseList');
+          list.innerHTML = "";
+
+          if (data.length === 0) {
+            list.innerHTML = "<li>No courses found</li>";
+            return;
+          }
+
+          data.forEach(course => {
+
+            const li = document.createElement("li");
+
+            li.innerHTML = `
+              <strong>${course.nombre}</strong> 
+              (Código: ${course.codigo}) <br>
+              ${course.descripcion} <br>
+              Profesor: ${course.professorId.nombre} ${course.professorId.apellidos}
+              <br><br>
+              <button onclick="deleteCourse('${course._id}')">Delete</button>
+              <button onclick="editCourse('${course._id}')">Edit</button>
+              <hr>
+            `;
+
+            list.appendChild(li);
+          });
+
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function deleteCourse(id) {
+
+      fetch(`http://localhost:3001/course?id=${id}`, {
+        method: "DELETE"
+      })
+      .then(response => {
+        if (response.status === 200) {
+          getCourses(); // recargar lista
+        } else if (response.status === 404) {
+          alert("Course not found");
+        }
+      })
+      .catch(error => console.error("Error:", error));
+    }
+
+    function editCourse(id) {
+      window.location.href = `edit.html?id=${id}`;
+    }
+
+  </script>
+
+</body>
+</html>

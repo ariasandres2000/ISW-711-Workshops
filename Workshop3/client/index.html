@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create Course</title>
+</head>
+<body>
+
+  <h2>Create Course</h2>
+
+  <label>Nombre:</label>
+  <input type="text" id="nombre"><br><br>
+
+  <label>Código:</label>
+  <input type="text" id="codigo"><br><br>
+
+  <label>Descripción:</label>
+  <input type="text" id="descripcion"><br><br>
+
+  <label>Profesor:</label>
+  <select id="professorSelect"></select><br><br>
+
+  <button onclick="createCourse()">Create</button>
+
+  <h3>Result:</h3>
+  <div id="result"></div>
+
+  <br>
+  <a href="list.html">Go to Course List</a>
+
+  <script>
+
+    // Cargar profesores al iniciar
+    window.onload = function() {
+      loadProfessors();
+    };
+
+    function loadProfessors() {
+      fetch("http://localhost:3001/professor")
+        .then(response => response.json())
+        .then(data => {
+          const select = document.getElementById("professorSelect");
+          select.innerHTML = "";
+
+          data.forEach(prof => {
+            const option = document.createElement("option");
+            option.value = prof._id;
+            option.text = prof.nombre + " " + prof.apellidos;
+            select.appendChild(option);
+          });
+        })
+        .catch(error => console.error("Error loading professors:", error));
+    }
+
+    function createCourse() {
+      const nombre = document.getElementById('nombre').value;
+      const codigo = document.getElementById('codigo').value;
+      const descripcion = document.getElementById('descripcion').value;
+      const professorId = document.getElementById('professorSelect').value;
+
+      if (!nombre || !codigo || !descripcion || !professorId) {
+        alert("Please complete all fields");
+        return;
+      }
+
+      fetch("http://localhost:3001/course", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nombre,
+          codigo,
+          descripcion,
+          professorId
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('result').innerHTML =
+          "Created: " + JSON.stringify(data);
+
+        document.getElementById('nombre').value = "";
+        document.getElementById('codigo').value = "";
+        document.getElementById('descripcion').value = "";
+      })
+      .catch(error => console.error("Error:", error));
+    }
+
+  </script>
+
+</body>
+</html>
