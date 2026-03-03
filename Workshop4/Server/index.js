@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require("cors");
 const mongoose = require('mongoose');
+const { authenticateToken, generateToken } = require('./controllers/auth');
 
 const professorRoutes = require('./routes/professors');
 const courseRoutes = require('./routes/courses');
 const authRoutes = require('./routes/auth');
-
 
 mongoose.connect('mongodb://127.0.0.1:27017/utnapi');
 
@@ -25,10 +25,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Routes
-app.use('/professor', professorRoutes);
-app.use('/course', courseRoutes);
+
 app.use('/auth', authRoutes);
+
+app.use('/professor', authenticateToken, professorRoutes);
+app.use('/course', authenticateToken, courseRoutes);
+
 
 // Start server
 app.listen(3001, () =>
