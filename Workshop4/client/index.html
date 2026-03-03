@@ -23,73 +23,99 @@
   <select id="professorSelect"></select><br><br>
 
   <button class="primary" onclick="createCourse()">Create</button>
+  <button onclick="logout()">Logout</button>
 
   <h3>Result:</h3>
   <div id="result"></div>
 
   <br>
   <a href="list.html">Go to Course List</a>
+  
 
-  <script>
+<script>
 
-    // Cargar profesores al iniciar
-    window.onload = function() {
-      loadProfessors();
-    };
+  
+  if (!sessionStorage.getItem("token")) {
+    window.location.href = "login.html";
+  }
 
-    function loadProfessors() {
-      fetch("http://localhost:3001/professor")
-        .then(response => response.json())
-        .then(data => {
-          const select = document.getElementById("professorSelect");
-          select.innerHTML = "";
+  // Cargar profesores al iniciar
+  window.onload = function() {
+    loadProfessors();
+  };
 
-          data.forEach(prof => {
-            const option = document.createElement("option");
-            option.value = prof._id;
-            option.text = prof.nombre + " " + prof.apellidos;
-            select.appendChild(option);
-          });
-        })
-        .catch(error => console.error("Error loading professors:", error));
+  function loadProfessors() {
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      alert("Primero debes iniciar sesion");
+      window.location.href = "login.html"; 
+      return;
     }
 
-    function createCourse() {
-      const nombre = document.getElementById('nombre').value;
-      const codigo = document.getElementById('codigo').value;
-      const descripcion = document.getElementById('descripcion').value;
-      const professorId = document.getElementById('professorSelect').value;
-
-      if (!nombre || !codigo || !descripcion || !professorId) {
-        alert("Please complete all fields");
-        return;
+    fetch("http://localhost:3001/professor", {
+      headers: {
+        "Authorization": "Bearer " + token
       }
-
-      fetch("http://localhost:3001/course", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nombre,
-          codigo,
-          descripcion,
-          professorId
-        })
-      })
+    })
       .then(response => response.json())
       .then(data => {
-        document.getElementById('result').innerHTML =
-          "Created: " + JSON.stringify(data);
+        const select = document.getElementById("professorSelect");
+        select.innerHTML = "";
 
-        document.getElementById('nombre').value = "";
-        document.getElementById('codigo').value = "";
-        document.getElementById('descripcion').value = "";
+        data.forEach(prof => {
+          const option = document.createElement("option");
+          option.value = prof._id;
+          option.text = prof.nombre + " " + prof.apellidos;
+          select.appendChild(option);
+        });
       })
-      .catch(error => console.error("Error:", error));
-    }
+      .catch(error => console.error("Error loading professors:", error));
+  }
 
-  </script>
+      function createCourse() {
+        const nombre = document.getElementById('nombre').value;
+        const codigo = document.getElementById('codigo').value;
+        const descripcion = document.getElementById('descripcion').value;
+        const professorId = document.getElementById('professorSelect').value;
+
+        if (!nombre || !codigo || !descripcion || !professorId) {
+          alert("Please complete all fields");
+          return;
+        }
+
+        fetch("http://localhost:3001/course", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + sessionStorage.getItem("token")
+          },
+          body: JSON.stringify({
+            nombre,
+            codigo,
+            descripcion,
+            professorId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('result').innerHTML =
+            "Created: " + JSON.stringify(data);
+
+          document.getElementById('nombre').value = "";
+          document.getElementById('codigo').value = "";
+          document.getElementById('descripcion').value = "";
+        })
+        .catch(error => console.error("Error:", error));
+      }
+
+      function logout() {
+        sessionStorage.removeItem("token");
+        window.location.href = "login.html";
+      }
+
+</script>
 </div>
 </body>
 </html>

@@ -32,6 +32,8 @@ app.use('/professor', authenticateToken, professorRoutes);
 app.use('/course', authenticateToken, courseRoutes);
 
 
+
+
 // Start server
 app.listen(3001, () =>
     console.log('UTN API service listening on port 3001!')

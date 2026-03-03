@@ -19,60 +19,73 @@
 
   <script>
 
-    function getCourses() {
-      fetch("http://localhost:3001/course")
-        .then(response => response.json())
-        .then(data => {
-
-          const list = document.getElementById('courseList');
-          list.innerHTML = "";
-
-          if (data.length === 0) {
-            list.innerHTML = "<li>No courses found</li>";
-            return;
-          }
-
-          data.forEach(course => {
-
-            const li = document.createElement("div");
-            li.className = "course-card";
-
-            li.innerHTML = `
-              <strong>${course.nombre}</strong> 
-              (Código: ${course.codigo}) <br>
-              ${course.descripcion} <br>
-              Profesor: ${course.professorId.nombre} ${course.professorId.apellidos}
-              <br><br>
-              <button class="danger" onclick="deleteCourse('${course._id}')">Delete</button>
-              <button class="secondary" onclick="editCourse('${course._id}')">Edit</button>
-              <hr>
-            `;
-
-            list.appendChild(li);
-          });
-
-        })
-        .catch(error => console.error("Error:", error));
+    if (!sessionStorage.getItem("token")) {
+    window.location.href = "login.html";
     }
 
-    function deleteCourse(id) {
+function getCourses() {
 
-      fetch(`http://localhost:3001/course?id=${id}`, {
-        method: "DELETE"
-      })
-      .then(response => {
-        if (response.status === 200) {
-          getCourses();
-        } else if (response.status === 404) {
-          alert("Course not found");
-        }
-      })
-      .catch(error => console.error("Error:", error));
+  fetch("http://localhost:3001/course", {
+    headers: {
+      "Authorization": "Bearer " + sessionStorage.getItem("token")
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Unauthorized or error loading courses");
+    }
+    return response.json();
+  })
+  .then(data => {
+
+    const list = document.getElementById('courseList');
+    list.innerHTML = "";
+
+    if (data.length === 0) {
+      list.innerHTML = "<li>No courses found</li>";
+      return;
     }
 
-    function editCourse(id) { 
-      window.location.href = `edit.html?id=${id}`;
+    data.forEach(course => {
+
+      const li = document.createElement("div");
+      li.className = "course-card";
+
+      li.innerHTML = `
+        <strong>${course.nombre}</strong> 
+        (Código: ${course.codigo}) <br>
+        ${course.descripcion} <br>
+        Profesor: ${course.professorId.nombre} ${course.professorId.apellidos}
+        <br><br>
+        <button class="danger" onclick="deleteCourse('${course._id}')">Delete</button>
+        <button class="secondary" onclick="editCourse('${course._id}')">Edit</button>
+        <hr>
+      `;
+
+      list.appendChild(li);
+    });
+
+  })
+  .catch(error => console.error("Error:", error));
+}
+
+function deleteCourse(id) {
+
+  fetch(`http://localhost:3001/course?id=${id}`, {
+    method: "DELETE",
+    headers: {
+      "Authorization": "Bearer " + sessionStorage.getItem("token")
     }
+  })
+  .then(response => {
+    if (response.status === 200) {
+      getCourses();
+    } else if (response.status === 404) {
+      alert("Course not found");
+    }
+  })
+  .catch(error => console.error("Error:", error));
+}
 
   </script>
 </div>
