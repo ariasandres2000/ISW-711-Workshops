@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 const professorRoutes = require('./routes/professors');
 const courseRoutes = require('./routes/courses');
+const authRoutes = require('./routes/auth');
+
 
 mongoose.connect('mongodb://127.0.0.1:27017/utnapi');
 
@@ -26,6 +28,7 @@ app.use(cors());
 // Routes
 app.use('/professor', professorRoutes);
 app.use('/course', courseRoutes);
+app.use('/auth', authRoutes);
 
 // Start server
 app.listen(3001, () =>
